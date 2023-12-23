@@ -3,24 +3,26 @@ import { useState } from "react";
 import { LoginContext } from "./contexts/LoginContext";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import Gallary from "./Gallary";
+import Gallery from "./Gallery";
 import Login from "./Login";
 import Upload from "./Upload";
 import Log from "./Log";
 import PageNotFound from "./PageNotFound";
 import SignUp from "./SignUp";
+import Unauthorized from "./Unauthorized";
 
 function App() {
   const [loginStatus, setLoginStatus] = useState(false);
 
   return (
     <>
-      <LoginContext.Provider value={{loginStatus, setLoginStatus}}>
+      <LoginContext.Provider value={{ loginStatus, setLoginStatus }}>
         <Router>
           <Navbar></Navbar>
           <Routes>
             <Route path="/" element={<Login />} />
-            <Route path="/gallary" element={<Gallary />}></Route>
+            <Route path="/unauthorized" element={<Unauthorized />}></Route>
+            <Route path="/gallery" element={<Gallery />}></Route>
             <Route path="/upload" element={<Upload />} />
             <Route path="/logs" element={<Log />}></Route>
             <Route path="/signUp" element={<SignUp />}></Route>

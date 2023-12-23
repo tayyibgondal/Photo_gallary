@@ -8,15 +8,40 @@ function Navbar() {
 
   // Do this on logout
   function handleLogout() {
+    // Send request to backend
+    const apiUrl = "http://localhost:4000/logout";
+    const authToken = localStorage.getItem("authToken");
+
+    fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authToken,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .catch((error) => {
+        // Handle errors that occurred during the fetch
+        console.error("Error during fetch:", error);
+      });
+
+    // Work to be done on frontend
     setLoginStatus(false);
-    navigator('/');
+    // Removing a value from Local Storage
+    localStorage.removeItem("username");
+    navigator("/");
   }
 
   let ulContent;
   if (loginStatus) {
     ulContent = (
       <ul className="navbar">
-        <Link to="gallary">Gallary</Link>
+        <Link to="gallery">Gallery</Link>
         <Link to="logs">View Logs</Link>
         <Link to="upload">Upload Image</Link>
         <Link to="" onClick={handleLogout}>

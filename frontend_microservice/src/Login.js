@@ -20,8 +20,7 @@ function Login() {
 function redirectToWebsite(e) {
   e.preventDefault();
 
-  // Assuming your API endpoint is at http://localhost:5000/login
-  const apiUrl = "http://localhost:5000/login";
+  const apiUrl = "http://localhost:4000/login";
 
   // Assuming you are sending data in JSON format
   const requestData = {
@@ -30,7 +29,7 @@ function redirectToWebsite(e) {
   };
 
   fetch(apiUrl, {
-    method: "POST", // You might want to use 'GET' or 'POST' based on your server implementation
+    method: "POST", 
     headers: {
       "Content-Type": "application/json",
     },
@@ -47,6 +46,9 @@ function redirectToWebsite(e) {
       // Handle the data received from the server
       // For example, you might check if the login was successful
       if (data.token) {
+        // Save the token to localStorage
+        localStorage.setItem("authToken", data.token);
+        
         setLoginStatus(true);
         navigator("/gallery");
       } else {
@@ -55,8 +57,7 @@ function redirectToWebsite(e) {
     })
     .catch((error) => {
       // Handle errors that occurred during the fetch
-      console.error("Error during fetch:", error);
-      setError("An error occurred. Please try again later.");
+      setError("An error occurred. Please enter both email and password.");
     });
 }
 

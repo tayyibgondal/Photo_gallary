@@ -17,14 +17,47 @@ function Login() {
     setPassword(e.target.value);
   }
 
-  function redirectToWebsite(e) {
-    e.preventDefault();
-    // Here you can add logic to validate the username and password
-    // For simplicity, let's assume validation is successful for now
-    setLoginStatus(true);
-    navigator("/gallary");
-    // setError("Invalid username or password");
-  }
+function redirectToWebsite(e) {
+  e.preventDefault();
+
+  const apiUrl = "http://localhost:4000/signup";
+
+  // Assuming you are sending data in JSON format
+  const requestData = {
+    username: username,
+    password: password,
+  };
+
+  fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestData),
+  })
+    .then((response) => {
+      // Handle the response here
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json(); // Assuming the server returns JSON
+    })
+    .then((data) => {
+      // Handle the data received from the server
+      // For example, you might check if the login was successful
+      if (data.token) {
+        // Save the token to localStorage
+        localStorage.setItem("authToken", data.token);
+
+        setLoginStatus(true);
+        navigator("/gallery");
+      }
+    })
+    .catch((error) => {
+      // Handle errors that occurred during the fetch
+      setError("An error occurred. Please enter both email and password.");
+    });
+}
 
   return (
     <div className="login">
