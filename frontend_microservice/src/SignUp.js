@@ -20,7 +20,7 @@ function Login() {
 function redirectToWebsite(e) {
   e.preventDefault();
 
-  const apiUrl = "http://localhost:4000/signup";
+  const apiUrl = "http://localhost:3003/signup";
 
   // Assuming you are sending data in JSON format
   const requestData = {

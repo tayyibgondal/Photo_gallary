@@ -9,7 +9,7 @@ function Navbar() {
   // Do this on logout
   function handleLogout() {
     // Send request to backend
-    const apiUrl = "http://localhost:4000/logout";
+    const apiUrl = "http://localhost:3003/logout";
     const authToken = localStorage.getItem("authToken");
 
     fetch(apiUrl, {

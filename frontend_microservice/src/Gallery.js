@@ -8,7 +8,7 @@ function Gallery() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:4000/validate_token", {
+        const response = await fetch("http://localhost:3003/validate_token", {
           method: "GET",
           headers: {
             Authorization: localStorage.getItem("authToken"),
@@ -18,33 +18,72 @@ function Gallery() {
         if (response.ok) {
           const data = await response.json();
 
-          // Since login is true, now fetch data and update state
-          // Dummy data for images - fetch it
-          const fetchedImageUrls = [
-            "https://picsum.photos/200",
-            "https://picsum.photos/201",
-            "https://picsum.photos/202",
-          ];
-          setImageUrls(fetchedImageUrls);
+          const imagesResponse = await fetch("http://localhost:3001/images", {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (imagesResponse.ok) {
+            const imagesData = await imagesResponse.json();
+            setImageUrls(imagesData);
+          } else {
+            console.error("Error fetching images:", imagesResponse.statusText);
+          }
         } else {
           navigate("/unauthorized");
         }
       } catch (error) {
         console.error("Error during fetch:", error);
-        navigate("/");
       }
     };
 
-    // Call the function when the component mounts
     fetchData();
-  }, []);
+  }, [navigate]);
+
+  const handleDelete = async (imageId) => {
+    try {
+      const deleteResponse = await fetch(
+        `http://localhost:3001/remove/${imageId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: localStorage.getItem("authToken"),
+          },
+        }
+      );
+
+      if (deleteResponse.ok) {
+        const updatedImages = imageUrls.filter(
+          (image) => image._id !== imageId
+        );
+        setImageUrls(updatedImages);
+      } else {
+        console.error("Error deleting image:", deleteResponse.statusText);
+      }
+    } catch (error) {
+      console.error("Error during delete:", error);
+    }
+  };
 
   return (
-    <div>
+    <div className="gallery-container">
       <h2>Gallery</h2>
       <div className="image-container">
-        {imageUrls.map((imageUrl, index) => (
-          <img key={index} src={imageUrl} alt={`Image ${index}`} />
+        {imageUrls.map((imageUrl) => (
+          <div key={imageUrl._id} className="image-wrapper">
+            <img
+              src={imageUrl.imageUrl}
+              alt={`Image ${imageUrl._id}`}
+              className="gallery-image"
+            />
+            <button
+              className="delete-button"
+              onClick={() => handleDelete(imageUrl._id)}
+            >
+              Delete
+            </button>
+          </div>
         ))}
       </div>
     </div>

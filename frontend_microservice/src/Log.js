@@ -2,59 +2,71 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Log() {
-  // While iterating the logs array of objects in jsx, 
-  // we need to have each object to have a unique id.
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigator = useNavigate();
-
-  // Fetch data for logs
-  const logs = [{
-    id: 1,
-    type: "Image upload",
-    time: "January 10, 2023 8:30 pm",
-    details:
-      "One year after the torrential rains of Hurricane Ida drowned 11 people in their homes in New York City, lawmakers and housing advocates are urging the city to speed efforts to make basement apartments safer from severe flooding.",
-  }];
+  const [logs, setLogs] = useState(null);
 
   useEffect(() => {
-    const apiUrl = "http://localhost:4000/validate_token";
-    const authToken = localStorage.getItem("authToken");
+    const fetchData = async () => {
+      try {
+        const apiUrl = "http://localhost:3003/validate_token";
+        const authToken = localStorage.getItem("authToken");
 
-    fetch(apiUrl, {
-      method: "GET",
-      headers: {
-        Authorization: authToken,
-      },
-    })
-      .then((response) => {
-        return response.json(); // Assuming the server returns JSON
-      })
-      .then((data) => {
-        if (data.userId) {
+        const responseToken = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            Authorization: authToken,
+          },
+        });
+
+        if (!responseToken.ok) {
+          throw new Error("Failed to validate token");
+        }
+
+        const dataToken = await responseToken.json();
+
+        if (dataToken.userId) {
           setIsLoggedIn(true);
+
+          const logsUrl = `http://localhost:3002/logs/${dataToken.userId}`;
+          const responseLogs = await fetch(logsUrl, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (!responseLogs.ok) {
+            throw new Error("Failed to fetch logs");
+          }
+
+          const logsData = await responseLogs.json();
+          setLogs(logsData);
         } else {
           navigator("/unauthorized");
         }
-      })
-      .catch((error) => {
-        console.error("Error during fetch:", error);
-      });
-  }, []);
+      } catch (error) {
+        console.error("Error during fetch:", error.message);
+      }
+    };
 
-  // Show logs
+    fetchData();
+  }, [navigator]);
+
   return (
     <div>
-      {isLoggedIn && (
+      {isLoggedIn && logs && (
         <div className="logs">
           <h2>Logs</h2>
           {logs.map((log) => (
-            <div key={log.id}>
-              <h3 className="type">{log.type}</h3>
+            <div key={log._id}>
+              <h3 className="type">{log.transactionType}</h3>
               <p>
-                Time: <b>{log.time}</b>
+                Time: <b>{log.createdAt}</b>
               </p>
-              <h4>Details</h4>
-              <p>{log.details}</p>
+              <p>
+                File size: <b>{log.fileSize / 1000} KB</b>
+              </p>
             </div>
           ))}
         </div>
