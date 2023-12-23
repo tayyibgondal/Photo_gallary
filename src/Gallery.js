@@ -27,9 +27,7 @@ function Gallery() {
           if (imagesResponse.ok) {
             const imagesData = await imagesResponse.json();
             setImageUrls(imagesData);
-          } else {
-            console.error("Error fetching images:", imagesResponse.statusText);
-          }
+          } 
         } else {
           navigate("/unauthorized");
         }
@@ -41,10 +39,10 @@ function Gallery() {
     fetchData();
   }, [navigate]);
 
-  const handleDelete = async (imageId) => {
+  const handleDelete = async (imageId, public_id) => {
     try {
       const deleteResponse = await fetch(
-        `http://localhost:3001/remove/${imageId}`,
+        `http://localhost:3001/remove/${imageId}/${public_id}`,
         {
           method: "DELETE",
           headers: {
@@ -79,7 +77,7 @@ function Gallery() {
             />
             <button
               className="delete-button"
-              onClick={() => handleDelete(imageUrl._id)}
+              onClick={() => handleDelete(imageUrl._id, imageUrl.public_id)}
             >
               Delete
             </button>
