@@ -7,10 +7,14 @@ function Upload() {
   const navigator = useNavigate();
   const [userId, setUserId] = useState(null);
   const [message, setMessage] = useState(null);
+  const [bandwidthQuota, setBandwidthQuota] = useState(null);
+  const [storageQuota, setStorageQuota] = useState(null);
+  const [fileSelected, setFileSelected] = useState(false);
 
   function handleFileChange(e) {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
+    setFileSelected(true);
   }
 
   function handleUpload(e) {
@@ -42,7 +46,7 @@ function Upload() {
         }
       })
       .catch((error) => {
-        console.error("Error during fetch:", error);
+        setMessage("Jani ap ki bandwidth/storage exceed ho gai hai...");
       });
   }
 
@@ -60,8 +64,15 @@ function Upload() {
         return response.json(); // Assuming the server returns JSON
       })
       .then((data) => {
+        console.log(data);
         if (data.userId) {
           setUserId(data.userId);
+          setBandwidthQuota(
+            Math.round((25 - data.user.bandwidthQuota) * 100) / 100
+          );
+          setStorageQuota(
+            Math.round((10 - data.user.storageQuota) * 100) / 100
+          );
           setIsLoggedIn(true);
         } else {
           navigator("/unauthorized");
@@ -70,11 +81,15 @@ function Upload() {
       .catch((error) => {
         console.error("Error during fetch:", error);
       });
-  }, []);
+  }, [message]);
 
   return (
-    <div>
-      <div>{message}</div>
+    <div className="my-component">
+      <div>
+        <div className="upload-success-message">{message}</div>
+        <div>Bandwidth remaining: {bandwidthQuota} MBs</div>
+        <div>Storage Quota remaining: {storageQuota} MBs</div>
+      </div>
       {isLoggedIn && (
         <div className="upload-container">
           <h2 className="upload-heading">Upload a new image!</h2>
@@ -89,6 +104,11 @@ function Upload() {
               className="upload-input"
               onChange={handleFileChange}
             />
+            {fileSelected && (
+              <p className="file-selected-indicator">
+                File selected: {file.name}
+              </p>
+            )}
             <br />
             <button className="upload-button">Upload</button>
           </form>

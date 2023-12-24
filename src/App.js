@@ -4,6 +4,7 @@ import { LoginContext } from "./contexts/LoginContext";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Gallery from "./Gallery";
+import MyPhotos from "./MyPhotos";
 import Login from "./Login";
 import Upload from "./Upload";
 import Log from "./Log";
@@ -23,6 +24,7 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/unauthorized" element={<Unauthorized />}></Route>
             <Route path="/gallery" element={<Gallery />}></Route>
+            <Route path="/myPhotos" element={<MyPhotos />}></Route>
             <Route path="/upload" element={<Upload />} />
             <Route path="/logs" element={<Log />}></Route>
             <Route path="/signUp" element={<SignUp />}></Route>

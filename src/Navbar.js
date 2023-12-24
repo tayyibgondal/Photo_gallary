@@ -38,10 +38,11 @@ function Navbar() {
   }
 
   let ulContent;
-  if (loginStatus) {
+  if (localStorage.getItem("authToken")) {
     ulContent = (
       <ul className="navbar">
         <Link to="gallery">Gallery</Link>
+        <Link to="myPhotos">My Photos</Link>
         <Link to="logs">View Logs</Link>
         <Link to="upload">Upload Image</Link>
         <Link to="" onClick={handleLogout}>
@@ -56,12 +57,11 @@ function Navbar() {
         <Link to="/">Login</Link>
       </ul>
     );
-    
   }
 
   return (
     <div className="navbar">
-      <h1 className="name">Photo Gallary Application</h1>
+      <h1 className="name">Photo Gallery Application</h1>
       {ulContent}
     </div>
   );

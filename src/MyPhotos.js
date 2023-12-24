@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Gallery() {
+function MyPhotos() {
   const [imageUrls, setImageUrls] = useState([]);
   const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,16 +21,19 @@ function Gallery() {
           const data = await response.json();
           setUserId(data.userId);
 
-          const imagesResponse = await fetch("http://localhost:3001/images", {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+          const imagesResponse = await fetch(
+            `http://localhost:3001/images/${data.userId}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
           if (imagesResponse.ok) {
             const imagesData = await imagesResponse.json();
             setImageUrls(imagesData);
-          } 
+          }
         } else {
           navigate("/unauthorized");
         }
@@ -66,9 +70,41 @@ function Gallery() {
     }
   };
 
+  const handleDeleteAll = async () => {
+    try {
+      const deleteAllResponse = await fetch(
+        `http://localhost:3001/removeAll/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: localStorage.getItem("authToken"),
+          },
+        }
+      );
+
+      if (deleteAllResponse.ok) {
+        setImageUrls([]);
+        // Optionally, you can show a message that all photos are deleted.
+        setMessage("All photos deleted successfully!");
+      } else {
+        setMessage("You have already deleted your photos!");
+      }
+    } catch (error) {
+      console.error("Error during delete all photos:", error);
+    }
+  };
+
   return (
     <div className="gallery-container">
-      <h2>Gallery</h2>
+      <div className="sub-head">
+        <h2 className="p-h">Your Photos</h2>
+        <div>
+          <button className="delete-all-button" onClick={handleDeleteAll}>
+            Delete All Photos
+          </button> 
+        </div>
+      </div>
+      <div>{message}</div>
       <div className="image-container">
         {imageUrls.map((imageUrl) => (
           <div key={imageUrl._id} className="image-wrapper">
@@ -90,4 +126,4 @@ function Gallery() {
   );
 }
 
-export default Gallery;
+export default MyPhotos;

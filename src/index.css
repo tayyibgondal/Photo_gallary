@@ -87,6 +87,38 @@ body {
   transform: scale(1.05);
 }
 
+.gallery-container .p-h {
+  display: inline;
+}
+
+.gallery-container .sub-head {
+  display: flex;
+  justify-content: space-between;
+}
+
+.gallery-container .delete-all-button {
+  background-color: #ff5757;
+  /* Red color for delete button */
+  color: #fff;
+  /* White text color */
+  padding: 10px 15px;
+  margin-top: 20px;
+  /* Adjust padding as needed */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  /* Adjust margin as needed */
+  transition: background-color 0.3s ease;
+  /* Smooth transition effect */
+
+  /* Optional: Add hover effect */
+  &:hover {
+    background-color: #e04545;
+    /* Darker red on hover */
+  }
+}
+
 .logs {
   margin: 20px;
 }
@@ -199,4 +231,61 @@ body {
   padding: 8px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+/* Upload Component styles */
+.my-component .upload-success-message {
+  color: #61dafb;
+  margin-top: 10px;
+}
+
+.my-component .file-selected-indicator {
+  color: #61dafb;
+  margin-top: 10px;
+}
+
+.my-component {
+  margin: 20px;
+}
+
+.my-component>div {
+  background-color: #282c34;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.my-component h2 {
+  color: #61dafb;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.my-component label {
+  background-color: #61dafb;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.my-component label:hover {
+  background-color: #45a8eb;
+}
+
+.my-component button {
+  background-color: #61dafb;
+  color: #ffffff;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.my-component button:hover {
+  background-color: #45a8eb;
 }
