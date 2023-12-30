@@ -17,50 +17,49 @@ function Login() {
     setPassword(e.target.value);
   }
 
-function redirectToWebsite(e) {
-  e.preventDefault();
+  function redirectToWebsite(e) {
+    e.preventDefault();
 
-  const apiUrl = "http://localhost:3003/login";
+    const authApiUrl = process.env.REACT_APP_AUTH_SERVICE + "/login";
 
-  // Assuming you are sending data in JSON format
-  const requestData = {
-    username: username,
-    password: password,
-  };
+    // Assuming you are sending data in JSON format
+    const requestData = {
+      username: username,
+      password: password,
+    };
 
-  fetch(apiUrl, {
-    method: "POST", 
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestData),
-  })
-    .then((response) => {
-      // Handle the response here
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json(); // Assuming the server returns JSON
+    fetch(authApiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
     })
-    .then((data) => {
-      // Handle the data received from the server
-      // For example, you might check if the login was successful
-      if (data.token) {
-        // Save the token to localStorage
-        localStorage.setItem("authToken", data.token);
-        
-        setLoginStatus(true);
-        navigator("/gallery");
-      } else {
-        setError("Invalid username or password");
-      }
-    })
-    .catch((error) => {
-      // Handle errors that occurred during the fetch
-      setError("An error occurred. Please enter both email and password.");
-    });
-}
+      .then((response) => {
+        // Handle the response here
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json(); // Assuming the server returns JSON
+      })
+      .then((data) => {
+        // Handle the data received from the server
+        // For example, you might check if the login was successful
+        if (data.token) {
+          // Save the token to localStorage
+          localStorage.setItem("authToken", data.token);
 
+          setLoginStatus(true);
+          navigator("/gallery");
+        } else {
+          setError("Invalid username or password");
+        }
+      })
+      .catch((error) => {
+        // Handle errors that occurred during the fetch
+        setError("An error occurred. Please enter both email and password.");
+      });
+  }
 
   return (
     <div className="login">

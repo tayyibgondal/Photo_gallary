@@ -3,16 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { LoginContext } from "./contexts/LoginContext";
 
 function Navbar() {
-  const {loginStatus, setLoginStatus} = useContext(LoginContext);
+  const { loginStatus, setLoginStatus } = useContext(LoginContext);
   const navigator = useNavigate();
 
   // Do this on logout
   function handleLogout() {
     // Send request to backend
-    const apiUrl = "http://localhost:3003/logout";
+    const authApiUrl = process.env.REACT_APP_AUTH_SERVICE + "/logout";
     const authToken = localStorage.getItem("authToken");
 
-    fetch(apiUrl, {
+    fetch(authApiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,7 +33,7 @@ function Navbar() {
     // Work to be done on frontend
     setLoginStatus(false);
     // Removing a value from Local Storage
-    localStorage.removeItem("username");
+    localStorage.clear();
     navigator("/");
   }
 
@@ -61,7 +61,7 @@ function Navbar() {
 
   return (
     <div className="navbar">
-      <h1 className="name">Photo Gallery Application</h1>
+      <h1 className="name">Project Photon</h1>
       {ulContent}
     </div>
   );

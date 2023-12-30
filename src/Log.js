@@ -9,10 +9,11 @@ function Log() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiUrl = "http://localhost:3003/validate_token";
+        const authApiUrl =
+          process.env.REACT_APP_AUTH_SERVICE + "/validate_token";
         const authToken = localStorage.getItem("authToken");
 
-        const responseToken = await fetch(apiUrl, {
+        const responseToken = await fetch(authApiUrl, {
           method: "GET",
           headers: {
             Authorization: authToken,
@@ -28,7 +29,8 @@ function Log() {
         if (dataToken.userId) {
           setIsLoggedIn(true);
 
-          const logsUrl = `http://localhost:3002/logs/${dataToken.userId}`;
+          const logsUrl =
+            process.env.REACT_APP_LOG_SERVICE + "/logs/" + dataToken.userId;
           const responseLogs = await fetch(logsUrl, {
             method: "GET",
             headers: {

@@ -9,7 +9,9 @@ function Gallery() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3003/validate_token", {
+        const authApiUrl =
+          process.env.REACT_APP_AUTH_SERVICE + "/validate_token";
+        const response = await fetch(authApiUrl, {
           method: "GET",
           headers: {
             Authorization: localStorage.getItem("authToken"),
@@ -20,7 +22,8 @@ function Gallery() {
           const data = await response.json();
           setUserId(data.userId);
 
-          const imagesResponse = await fetch("http://localhost:3001/images", {
+          const storageURL = process.env.REACT_APP_STORAGE_SERVICE + "/images";
+          const imagesResponse = await fetch(storageURL, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -29,7 +32,7 @@ function Gallery() {
           if (imagesResponse.ok) {
             const imagesData = await imagesResponse.json();
             setImageUrls(imagesData);
-          } 
+          }
         } else {
           navigate("/unauthorized");
         }
@@ -43,15 +46,13 @@ function Gallery() {
 
   const handleDelete = async (imageId, public_id) => {
     try {
-      const deleteResponse = await fetch(
-        `http://localhost:3001/remove/${imageId}/${public_id}/${userId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: localStorage.getItem("authToken"),
-          },
-        }
-      );
+      const storageURL = process.env.REACT_APP_STORAGE_SERVICE + "/remove/" + imageId + public_id + userId;
+      const deleteResponse = await fetch(storageURL, {
+        method: "DELETE",
+        headers: {
+          Authorization: localStorage.getItem("authToken"),
+        },
+      });
 
       if (deleteResponse.ok) {
         const updatedImages = imageUrls.filter(
@@ -77,12 +78,6 @@ function Gallery() {
               alt={`Image ${imageUrl._id}`}
               className="gallery-image"
             />
-            <button
-              className="delete-button"
-              onClick={() => handleDelete(imageUrl._id, imageUrl.public_id)}
-            >
-              Delete
-            </button>
           </div>
         ))}
       </div>
