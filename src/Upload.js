@@ -19,14 +19,24 @@ function Upload() {
 
   function handleUpload(e) {
     e.preventDefault();
-    const apiUrl = "http://localhost:3001/upload";
+    const storageUrl = process.env.REACT_APP_STORAGE_SERVICE + "/upload/";
+
     const authToken = localStorage.getItem("authToken");
     const formData = new FormData();
 
     formData.append("image", file);
     formData.append("userId", userId);
 
-    fetch(apiUrl, {
+    if (file == null) {
+      setMessage("Please select a file!");
+      // Set a timeout to clear the message after 4 seconds
+      setTimeout(() => {
+        setMessage(null);
+      }, 4000);
+      return;
+    }
+
+    fetch(storageUrl, {
       method: "POST",
       headers: {
         Authorization: authToken,
@@ -43,18 +53,28 @@ function Upload() {
         // Handle the response from the server
         if (data.url) {
           setMessage("Image upload successful");
+          // Set a timeout to clear the message after 4 seconds
+          setTimeout(() => {
+            setMessage(null);
+          }, 4000);
+          return;
         }
       })
       .catch((error) => {
         setMessage("Jani ap ki bandwidth/storage exceed ho gai hai...");
+        // Set a timeout to clear the message after 4 seconds
+        setTimeout(() => {
+          setMessage(null);
+        }, 4000);
+        return;
       });
   }
 
   useEffect(() => {
-    const apiUrl = "http://localhost:3003/validate_token";
+    const authApiUrl = process.env.REACT_APP_AUTH_SERVICE + "/validate_token";
     const authToken = localStorage.getItem("authToken");
 
-    fetch(apiUrl, {
+    fetch(authApiUrl, {
       method: "GET",
       headers: {
         Authorization: authToken,

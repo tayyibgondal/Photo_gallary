@@ -10,7 +10,9 @@ function MyPhotos() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3003/validate_token", {
+        const authApiUrl =
+          process.env.REACT_APP_AUTH_SERVICE + "/validate_token";
+        const response = await fetch(authApiUrl, {
           method: "GET",
           headers: {
             Authorization: localStorage.getItem("authToken"),
@@ -21,14 +23,13 @@ function MyPhotos() {
           const data = await response.json();
           setUserId(data.userId);
 
-          const imagesResponse = await fetch(
-            `http://localhost:3001/images/${data.userId}`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
+          const storageUrl =
+            process.env.REACT_APP_STORAGE_SERVICE + "/images/" + data.userId;
+          const imagesResponse = await fetch(storageUrl, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
 
           if (imagesResponse.ok) {
             const imagesData = await imagesResponse.json();
@@ -47,15 +48,21 @@ function MyPhotos() {
 
   const handleDelete = async (imageId, public_id) => {
     try {
-      const deleteResponse = await fetch(
-        `http://localhost:3001/remove/${imageId}/${public_id}/${userId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: localStorage.getItem("authToken"),
-          },
-        }
-      );
+      const storageUrl =
+        process.env.REACT_APP_STORAGE_SERVICE +
+        "/remove/" +
+        imageId +
+        "/" +
+        public_id +
+        "/" +
+        userId;
+      console.log(storageUrl);
+      const deleteResponse = await fetch(storageUrl, {
+        method: "DELETE",
+        headers: {
+          Authorization: localStorage.getItem("authToken"),
+        },
+      });
 
       if (deleteResponse.ok) {
         const updatedImages = imageUrls.filter(
@@ -63,7 +70,14 @@ function MyPhotos() {
         );
         setImageUrls(updatedImages);
       } else {
-        console.error("Error deleting image:", deleteResponse.statusText);
+        console.log(deleteResponse.status);
+        setMessage(
+          "You can't make more delete requests until tomorrow, bandwidth quota exceeded for today!"
+        );
+        // Set a timeout to clear the message after 4 seconds
+        setTimeout(() => {
+          setMessage(null);
+        }, 4000);
       }
     } catch (error) {
       console.error("Error during delete:", error);
@@ -72,22 +86,38 @@ function MyPhotos() {
 
   const handleDeleteAll = async () => {
     try {
-      const deleteAllResponse = await fetch(
-        `http://localhost:3001/removeAll/${userId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: localStorage.getItem("authToken"),
-          },
-        }
-      );
+      const storageUrl =
+        process.env.REACT_APP_STORAGE_SERVICE + "/removeAll/" + userId;
+
+      const deleteAllResponse = await fetch(storageUrl, {
+        method: "DELETE",
+        headers: {
+          Authorization: localStorage.getItem("authToken"),
+        },
+      });
 
       if (deleteAllResponse.ok) {
         setImageUrls([]);
         // Optionally, you can show a message that all photos are deleted.
         setMessage("All photos deleted successfully!");
+        // Set a timeout to clear the message after 4 seconds
+        setTimeout(() => {
+          setMessage(null);
+        }, 4000);
+      } else if (deleteAllResponse.status === 400) {
+        setMessage(
+          "You can't make more delete requests until tomorrow, bandwidth quota exceeded for today!"
+        );
+        // Set a timeout to clear the message after 4 seconds
+        setTimeout(() => {
+          setMessage(null);
+        }, 4000);
       } else {
         setMessage("You have already deleted your photos!");
+        // Set a timeout to clear the message after 4 seconds
+        setTimeout(() => {
+          setMessage(null);
+        }, 4000);
       }
     } catch (error) {
       console.error("Error during delete all photos:", error);
@@ -101,7 +131,7 @@ function MyPhotos() {
         <div>
           <button className="delete-all-button" onClick={handleDeleteAll}>
             Delete All Photos
-          </button> 
+          </button>
         </div>
       </div>
       <div>{message}</div>
